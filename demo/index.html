@@ -12,6 +12,9 @@
 
   <link rel="import" href="../../paper-input/paper-input-container.html">
   <link href="../../paper-input/paper-input.html" rel="import">
+  <link rel="import" href="../../iron-autogrow-textarea/iron-autogrow-textarea.html">
+  <link rel="import" href="../../iron-input/iron-input.html">
+
 
   <link rel="stylesheet" href="../../paper-styles/demo.css">
 
@@ -26,11 +29,19 @@
   <section>
 
   <paper-input-container>
-
     <emoji-selector id="c"></emoji-selector>
-    <label id="l">label</label>
-    <input id="i" value="foobar">
+    <label>boring input</label>
+    <input is="iron-input">
   </paper-input-container>
+
+
+  <paper-input-container>
+    <emoji-selector id="c"></emoji-selector>
+    <label>autogrow-textarea</label>
+    <iron-autogrow-textarea class="paper-input-input"></iron-autogrow-textarea>
+  </paper-input-container>
+
+
 
 </section>
 </body>

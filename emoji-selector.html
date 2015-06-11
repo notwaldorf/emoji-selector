@@ -21,8 +21,10 @@
 
     :host {
       display: inline;
-      z-index: 10;
+
+      /* lol halp */
       position: relative;
+      z-index: 10;
       float: right;
       right: -35px;
       top: -35px
@@ -61,7 +63,23 @@
         return;
       }
 
-      this._element.value += "*";
+      var text = ".";
+
+      // Preserve the cursor position.
+
+      var value = this._element.value;
+      var start = this._element.selectionStart;
+      var end = this._element.selectionEnd;
+
+      var front = (value).substring(0, start);
+      var back = (value).substring(end, value.length);
+
+      this._element.value = front + text + back;
+      this._element.selectionStart = start + text.length;
+      this._element.selectionEnd = start + text.length;
+
+      this._element.focus();
+
     },
 
     update: function(state) {
