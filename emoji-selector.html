@@ -17,10 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="./bower_components/iron-icons/social-icons.html">
 <link rel="import" href="./bower_components/iron-icons/maps-icons.html">
 
-<link rel="import" href="./bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="./bower_components/paper-input/paper-input.html">
+<link rel="import" href="./bower_components/iron-input/iron-input.html">
 <link rel="import" href="./bower_components/paper-input/paper-input-container.html">
-
 <link rel="import" href="./bower_components/paper-input/paper-input-addon-behavior.html">
 
 <script type="text/javascript" language="javascript" src="emoji.json"></script>
@@ -48,6 +46,7 @@ Example:
 
 -->
 
+</style>
 <dom-module id="emoji-selector">
   <style>
     :host {
@@ -65,6 +64,12 @@ Example:
       margin-bottom: 5px;
       --paper-tabs-selection-bar-color: var(--default-primary-color);
     }
+
+    paper-input-container {
+      --paper-input-container-input: {
+        text-align: center;
+      };
+    };
 
     iron-pages {
       height: 140px;
@@ -123,12 +128,13 @@ Example:
   <template>
     <paper-icon-button icon="face"on-click="_onClick"></paper-icon-button>
 
-    <div id="box" hidden>
-      <paper-input id="searchInput"
-          placeholder="emoji search" no-label-float
-          on-value-changed="_onInput"></paper-input>
+    <div id="box">
+      <paper-input-container no-label-float>
+        <input is="iron-input" id="searchInput" placeholder="find an emoji!"
+            on-input="_onInput">
+      </paper-input-container>
 
-      <paper-tabs selected="{{selected}}">
+      <paper-tabs selected="{{selected}}" id="tabs">
         <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
         <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
         <paper-tab><iron-icon icon="social:notifications"></iron-icon></paper-tab>
@@ -220,11 +226,12 @@ Example:
     _onClick: function() {
       if (this.selected != 5) {
         this.$.searchInput.value = '';
-        this.$.searchInput.inputElement.focus();
+        this.$.searchInput.focus();
       }
-      this.$.searchInput.inputElement.selectionStart = 0;
+      this.$.searchInput.selectionStart = 0;
 
       this.$.box.hidden = !this.$.box.hidden;
+      this.$.tabs.notifyResize();
     },
 
     _addEmoji: function(event) {
