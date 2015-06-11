@@ -141,7 +141,7 @@ Example:
         </template>
         <div class="emoji-section">
           <template is="dom-repeat" id="resultList" items="{{searchResults}}">
-            <div class="emoji-icon" on-click="_addEmoji">{{item}}</div>
+            <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
           </template>
         </div>
       </iron-pages>
@@ -199,9 +199,12 @@ Example:
         var category = emojis[name]['category'];
         if (category) {
           var index = indexes[category];
+          var keywords = emojis[name]['keywords'];
+          if (keywords.indexOf(name) == -1)
+            keywords.push(name);
+
           this.emojis[index]["items"].push(
-              {'char': emojis[name]['char'],
-               'keywords': emojis[name]['keywords'].join(' ')});
+              {'char': emojis[name]['char'], 'keywords': keywords.join(' ')});
         }
       }
     },
@@ -267,7 +270,9 @@ Example:
         var category = this.emojis[i];
         for (var j = 0; j < category.items.length; j++) {
           if (category.items[j]['keywords'].indexOf(search) != -1) {
-            this.push('searchResults', category.items[j]['char']);
+            this.push('searchResults',
+                {'char': category.items[j]['char'],
+                 'keywords': category.items[j]['keywords']});
           }
         }
       }
