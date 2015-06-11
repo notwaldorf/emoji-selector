@@ -3,7 +3,7 @@
 👋`emoji-selector` is a `paper-input-addon` component (see [Polymer.PaperInput](https://github.com/polymerelements/paper-input))
 that lets you select an emoji from a list and insert it into a text field.
 
-Since you probably don't rememeber where each emoji is, it ships with a search-for-emoji-keywords feature! 🚀🎉
+Since you probably don't remember where each emoji is, it ships with a search-for-emoji-keywords feature! 🚀🎉
 
 Example:
 ```html
