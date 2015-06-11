@@ -1,0 +1,88 @@
+
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<link rel="import" href="../paper-input/paper-input-addon-behavior.html">
+
+<!--
+`emoji-selector` is a component that lets you select an emoji and insert it.
+
+    <paper-input id="in"></paper-input>
+    <emoji-selector target="in"></emoji-selector>
+-->
+
+<dom-module id="emoji-selector">
+  <link rel="import" type="css" href="emoji-selector.css">
+
+  <style>
+
+    :host {
+      display: inline;
+      z-index: 10;
+      position: relative;
+      float: right;
+      right: -35px;
+      top: -35px
+    }
+
+  </style>
+
+  <template>
+    <paper-icon-button icon="face"on-click="_onClick"></paper-icon-button>
+  </template>
+
+</dom-module>
+
+
+<script>
+  Polymer({
+
+    is: 'emoji-selector',
+
+    behaviors: [
+      Polymer.PaperInputAddonBehavior
+    ],
+
+    properties: {
+
+      _charCounterStr: {
+        type: String,
+        value: '0'
+      }
+
+    },
+
+    _onClick: function() {
+      console.log("adsfasdf");
+      if (!this._element) {
+        return;
+      }
+
+      this._element.value += "*";
+    },
+
+    update: function(state) {
+      this._element = state.inputElement;
+      console.log("update");
+
+    //   if (!state.inputElement) {
+    //     return;
+    //   }
+    //
+    //   state.value = state.value || '';
+    //
+    //   // Account for the textarea's new lines.
+    //   var str = state.value.replace(/(\r\n|\n|\r)/g, '--').length;
+    //
+    //   if (state.inputElement.hasAttribute('maxlength')) {
+    //     str += '/' + state.inputElement.getAttribute('maxlength');
+    //   }
+    //   this._charCounterStr = str;
+    }
+
+  });
+
+</script>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <title>emoji selector</title>
+
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link href="../emoji-selector.html" rel="import">
+
+  <link rel="import" href="../../paper-input/paper-input-container.html">
+  <link href="../../paper-input/paper-input.html" rel="import">
+
+  <link rel="stylesheet" href="../../paper-styles/demo.css">
+
+  <style is="custom-style">
+    section {
+      width: 200px;
+    }
+
+  </style>
+</head>
+<body>
+  <section>
+
+  <paper-input-container>
+
+    <emoji-selector id="c"></emoji-selector>
+    <label id="l">label</label>
+    <input id="i" value="foobar">
+  </paper-input-container>
+
+</section>
+</body>
+</html>
