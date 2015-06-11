@@ -2,17 +2,15 @@
   <meta charset="utf-8">
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-tabs/paper-tabs.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
 
+<link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-icons/social-icons.html">
 <link rel="import" href="../iron-icons/maps-icons.html">
-
 <link rel="import" href="../paper-input/paper-input-addon-behavior.html">
+
 <script type="text/javascript" language="javascript" src="emoji.json"></script>
 
 
@@ -34,7 +32,6 @@
 
       /* lol halp */
       position: relative;
-      z-index: 10;
       float: right;
       right: -35px;
       top: -35px
@@ -50,15 +47,6 @@
       height: 140px;
     }
 
-    .emoji-section {
-      height: 100%;
-      overflow-y: scroll;
-      font-size: 20px;
-      display:flex;
-      flex-wrap: wrap;
-      padding-left: 8px;
-    }
-
     #box {
         background: white;
         border-radius: 2px;
@@ -68,8 +56,52 @@
 
         width: 260px;
         height: 200px;
+
+        z-index: 2;
     }
 
+    .emoji-section {
+      height: 100%;
+      overflow-y: scroll;
+      display:flex;
+      flex-wrap: wrap;
+      padding-left: 8px;
+    }
+
+    .emoji-icon {
+      cursor: pointer;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 18px;
+      line-height: 24px;
+      width: 24px;
+      height: 24px;
+      padding-left: 2px;
+      padding-top: 2px;
+    }
+
+    .emoji-icon:hover {
+      -webkit-animation: icon-expand 140ms ease-out forwards;
+      animation: icon-expand 140ms ease-out forwards;
+    }
+
+    @-webkit-keyframes icon-expand {
+      0% {
+        transform: scale(1, 1);
+      }
+      100% {
+        transform: scale(1.25, 1.25); /* -2px*/
+      }
+    }
+
+    @keyframes icon-expand {
+      0% {
+        transform: scale(1, 1);
+      }
+      100% {
+        transform: scale(1.25, 1.25);
+      }
+    }
   </style>
 
   <template>
@@ -84,17 +116,18 @@
         <paper-tab><iron-icon icon="gesture"></iron-icon></paper-tab>
       </paper-tabs>
       <iron-pages selected="{{selected}}">
-        <div id="people" class="emoji-section"></div>
-        <div id="nature" class="emoji-section"></div>
-        <div id="objects" class="emoji-section"></div>
-        <div id="places" class="emoji-section"></div>
-        <div id="symbols" class="emoji-section"></div>
+        <template is="dom-repeat" items="[[emojis]]" as="category">
+          <div class="emoji-section" id="{{category.name}}">
+            <template is="dom-repeat" items="[[category.items]]" as="entry">
+              <span class="emoji-icon" on-click="_addEmoji">{{entry}}</span>
+            </template>
+          </div>
+        </template>
       </iron-pages>
     </div>
   </template>
 
 </dom-module>
-
 
 <script>
   Polymer({
@@ -106,71 +139,89 @@
     ],
 
     properties: {
+      /**
+       * The selected category.
+       */
       selected: {
         type: Number,
         value: 0
+      },
+
+      /**
+       * A list of all emojis, split by category
+       */
+      emojis: {
+        type: Array,
+        value: []
       }
     },
 
     ready: function() {
-      var start = new Date();
-      var all = {"people": [],
-                 "nature": [],
-                 "objects": [],
-                 "places": [],
-                 "symbols": []};
+      this.emojis = [{ "name": "people",  "items" : [ ] },
+                  { "name": "nature",  "items" : [ ] },
+                  { "name": "objects", "items" : [ ] },
+                  { "name": "places",  "items" : [ ] },
+                  { "name": "symbols", "items" : [ ] }];
+      var indexes = { "people" : 0,
+                      "nature" : 1,
+                      "objects": 2,
+                      "places" : 3,
+                      "symbols": 4};
 
       // Split by category.
       for (var name in emojis) {
-        if (emojis[name]['category'])
-          all[emojis[name]['category']].push(emojis[name]['char']);
-      }
-
-      var self = this;
-
-      // Add each category to the right section
-      for (var category in all) {
-        var list = this.$[category];
-        list.addEventListener('click', function(event) {
-          self._addEmoji(event.target.textContent);
-        });
-
-        for (var i = 0; i < all[category].length; i++) {
-          var s = document.createElement('span');
-          s.className = 'emoji-icon';
-          s.style.cssText ='cursor:pointer;padding-left:4px;';
-          s.innerHTML = all[category][i];
-          this.$[category].appendChild(s);
+        var category = emojis[name]['category'];
+        if (category) {
+          var index = indexes[category];
+          this.emojis[index]["items"].push(emojis[name]['char']);
         }
       }
-
-      console.log("ready took: ", (new Date() - start));
     },
 
     _onClick: function() {
       this.$.box.hidden = !this.$.box.hidden;
     },
 
-    _addEmoji: function(emoji) {
+    _addEmoji: function(event) {
       if (!this._element) {
         return;
       }
 
+      var emoji = event.target.textContent;
+
       // Preserve the cursor position.
-      var value = this._element.value;
-      var start = this._element.selectionStart;
-      var end = this._element.selectionEnd;
 
-      var front = (value).substring(0, start);
-      var back = (value).substring(end, value.length);
+      // iron-textarea has a bindValue
+      var value = '';
+      if (this._element.bindValue)
+        value  =  this._element.bindValue;
+      else
+        value = this._element.value;
 
-      this._element.value = front + emoji + back;
+      var needsOnInput = value.length == 0;
+
+      var start = this._element.selectionStart || value.length;
+      var end = this._element.selectionEnd || value.length + 1;
+
+      var front = value.substring(0, start);
+      var back = value.substring(end, value.length);
+
+      if (this._element.bindValue)
+        this._element.bindValue = front + emoji + back;
+      else
+        this._element.value = front + emoji + back;
+
       this._element.selectionStart = start + emoji.length;
       this._element.selectionEnd = start + emoji.length;
 
-      this._element._onInput();
       this._element.focus();
 
+      if (needsOnInput)
+        this._element._onInput();
+
+
+      // Close the box.
+      this._onClick();
     },
 
     update: function(state) {
