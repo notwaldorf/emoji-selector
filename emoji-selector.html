@@ -16,6 +16,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="./bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="./bower_components/iron-icons/social-icons.html">
 <link rel="import" href="./bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="./bower_components/paper-input/paper-input.html">
+<link rel="import" href="./bower_components/paper-input/paper-input-container.html">
+
 <link rel="import" href="./bower_components/paper-input/paper-input-addon-behavior.html">
 
 <script type="text/javascript" language="javascript" src="emoji.json"></script>
@@ -70,7 +73,7 @@ Example:
         position: absolute;
 
         width: 260px;
-        height: 200px;
+        height: 240px;
 
         z-index: 2;
     }
@@ -84,7 +87,7 @@ Example:
     .emoji-section {
       height: 100%;
       overflow-y: scroll;
-      display:flex;
+      flex-direction: column;
       flex-wrap: wrap;
       padding-left: 8px;
     }
@@ -111,7 +114,7 @@ Example:
         transform: scale(1, 1);
       }
       100% {
-        transform: scale(1.25, 1.25); /* -2px*/
+        transform: scale(1.5, 1.5);
       }
     }
 
@@ -120,7 +123,7 @@ Example:
         transform: scale(1, 1);
       }
       100% {
-        transform: scale(1.25, 1.25);
+        transform: scale(1.5, 1.5);
       }
     }
   </style>
@@ -129,6 +132,7 @@ Example:
     <paper-icon-button icon="face"on-click="_onClick"></paper-icon-button>
 
     <div id="box" hidden>
+      <paper-input id="searchInput" placeholder="emoji search" no-label-float on-value-changed="_onInput"></paper-input>
       <paper-tabs selected="{{selected}}">
         <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
         <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
@@ -138,12 +142,18 @@ Example:
       </paper-tabs>
       <iron-pages selected="{{selected}}">
         <template is="dom-repeat" items="[[emojis]]" as="category">
-          <div class="emoji-section" id="{{category.name}}">
-            <template is="dom-repeat" items="[[category.items]]" as="entry">
-              <span class="emoji-icon" on-click="_addEmoji">{{entry}}</span>
+          <div class="emoji-section">
+            <template is="dom-repeat" items="[[category.items]]">
+              <span class="emoji-icon" on-click="_addEmoji">{{item.char}}</span>
             </template>
           </div>
         </template>
+
+        <div class="emoji-section">
+          <template is="dom-repeat" id="resultList" items="{{searchResults}}">
+            <span class="emoji-icon" on-click="_addEmoji">{{item}}</span>
+          </template>
+        </div>
       </iron-pages>
     </div>
   </template>
@@ -174,10 +184,18 @@ Example:
       emojis: {
         type: Array,
         value: []
+      },
+
+      searchResults: {
+        type: Array,
+        value: [],
+        notify: true
       }
     },
 
     ready: function() {
+      // Save the raw json somewhere.
+
       this.emojis = [{ "name": "people",  "items" : [ ] },
                   { "name": "nature",  "items" : [ ] },
                   { "name": "objects", "items" : [ ] },
@@ -193,12 +211,15 @@ Example:
         var category = emojis[name]['category'];
         if (category) {
           var index = indexes[category];
-          this.emojis[index]["items"].push(emojis[name]['char']);
+          this.emojis[index]["items"].push(
+              {'char': emojis[name]['char'],
+               'keywords': emojis[name]['keywords'].join(' ')});
         }
       }
     },
 
     _onClick: function() {
+      this.$.searchInput.value = '';
       this.$.box.hidden = !this.$.box.hidden;
     },
 
@@ -243,6 +264,25 @@ Example:
 
       // Close the box.
       this._onClick();
+    },
+
+    _onInput: function(event) {
+      var search = this.$.searchInput.value;
+      if (search.trim() == '')
+        return;
+
+      this.selected = 5;
+      this.searchResults = [];
+
+      // UGH
+      for (var i = 0; i < this.emojis.length; i++) {
+        var category = this.emojis[i];
+        for (var j = 0; j < category.items.length; j++) {
+          if (category.items[j]['keywords'].indexOf(search) != -1) {
+            this.push('searchResults', category.items[j]['char']);
+          }
+        }
+      }
     },
 
     update: function(state) {
