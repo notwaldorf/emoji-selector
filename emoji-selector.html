@@ -207,7 +207,8 @@ Example:
             keywords.push(name);
 
           this.emojis[index]["items"].push(
-              {'char': emojis[name]['char'], 'keywords': keywords.join(' ')});
+              {'char': emojis[name]['char'],
+               'keywords': keywords.join(' ').toLowerCase()});
         }
       }
     },
@@ -218,7 +219,7 @@ Example:
         this.$.searchInput.inputElement.focus();
       }
       this.$.searchInput.inputElement.selectionStart = 0;
-      
+
       this.$.box.hidden = !this.$.box.hidden;
     },
 
@@ -266,7 +267,7 @@ Example:
     },
 
     _onInput: function(event) {
-      var search = this.$.searchInput.value;
+      var search = this.$.searchInput.value.toLowerCase();
       if (search.trim() == '' && this.selected == 5) {
         this.selected = 0;
         return;
