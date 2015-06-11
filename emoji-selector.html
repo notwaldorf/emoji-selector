@@ -27,6 +27,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 `emoji-selector` is a `paper-input-addon` component (see Polymer.PaperInput)
 that lets you select an emoji from a list and insert it into a text field.
 
+Since you probably don't rememeber where each emoji is, it ships with a
+search-for-emoji-keywords feature!
+
 Example:
 
     <paper-input-container>
@@ -210,7 +213,12 @@ Example:
     },
 
     _onClick: function() {
-      this.$.searchInput.value = '';
+      if (this.selected != 5) {
+        this.$.searchInput.value = '';
+        this.$.searchInput.inputElement.focus();
+      }
+      this.$.searchInput.inputElement.selectionStart = 0;
+      
       this.$.box.hidden = !this.$.box.hidden;
     },
 
@@ -259,8 +267,10 @@ Example:
 
     _onInput: function(event) {
       var search = this.$.searchInput.value;
-      if (search.trim() == '')
+      if (search.trim() == '' && this.selected == 5) {
+        this.selected = 0;
         return;
+      }
 
       this.selected = 5;
       this.searchResults = [];
