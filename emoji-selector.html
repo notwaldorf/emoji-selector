@@ -16,6 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="./bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="./bower_components/iron-icons/social-icons.html">
 <link rel="import" href="./bower_components/iron-icons/maps-icons.html">
+
+<link rel="import" href="./bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="./bower_components/paper-input/paper-input.html">
 <link rel="import" href="./bower_components/paper-input/paper-input-container.html">
 
@@ -69,16 +71,16 @@ Example:
     }
 
     #box {
-        background: white;
-        border-radius: 2px;
-        box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+      background: white;
+      border-radius: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
 
-        position: absolute;
+      position: absolute;
 
-        width: 260px;
-        height: 240px;
+      width: 260px;
+      height: 240px;
 
-        z-index: 2;
+      z-index: 2;
     }
 
     @media (max-width: 400px) {
@@ -211,6 +213,8 @@ Example:
                'keywords': keywords.join(' ').toLowerCase()});
         }
       }
+
+      this.selected = 0;
     },
 
     _onClick: function() {
@@ -272,6 +276,9 @@ Example:
         this.selected = 0;
         return;
       }
+
+      if (!this.emojis)
+        return;
 
       this.selected = 5;
       this.searchResults = [];
