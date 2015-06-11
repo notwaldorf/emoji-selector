@@ -18,14 +18,14 @@
   "devDependencies": {
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
-  "homepage": "https://github.com/PolymerElements/iron-flex-layout",
+  "homepage": "https://github.com/polymerelements/iron-flex-layout",
   "_release": "1.0.1",
   "_resolution": {
     "type": "version",
     "tag": "v1.0.1",
     "commit": "8828cc6ad1bb70d6a99aa1ecabc070b30256da06"
   },
-  "_source": "git://github.com/PolymerElements/iron-flex-layout.git",
+  "_source": "git://github.com/polymerelements/iron-flex-layout.git",
   "_target": "^1.0.0",
-  "_originalSource": "PolymerElements/iron-flex-layout"
+  "_originalSource": "polymerelements/iron-flex-layout"
 }
