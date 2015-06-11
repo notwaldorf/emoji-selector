@@ -1,11 +1,20 @@
 
-
+  <meta charset="utf-8">
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+<link rel="import" href="../iron-pages/iron-pages.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/social-icons.html">
+<link rel="import" href="../iron-icons/maps-icons.html">
 
 <link rel="import" href="../paper-input/paper-input-addon-behavior.html">
+<script type="text/javascript" language="javascript" src="emoji.json"></script>
+
 
 <!--
 `emoji-selector` is a component that lets you select an emoji and insert it.
@@ -16,9 +25,10 @@
 
 <dom-module id="emoji-selector">
   <link rel="import" type="css" href="emoji-selector.css">
+  <style is="custom-style">
 
+  </style>
   <style>
-
     :host {
       display: inline;
 
@@ -30,10 +40,57 @@
       top: -35px
     }
 
+    paper-tabs {
+      height: 40px;
+      margin-bottom: 5px;
+      --paper-tabs-selection-bar-color: var(--default-primary-color);
+    }
+
+    iron-pages {
+      height: 140px;
+    }
+
+    .emoji-section {
+      height: 100%;
+      overflow-y: scroll;
+      font-size: 20px;
+      display:flex;
+      flex-wrap: wrap;
+      padding-left: 8px;
+    }
+
+    #box {
+        background: white;
+        border-radius: 2px;
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+
+        position: absolute;
+
+        width: 260px;
+        height: 200px;
+    }
+
   </style>
 
   <template>
     <paper-icon-button icon="face"on-click="_onClick"></paper-icon-button>
+
+    <div id="box" hidden>
+      <paper-tabs selected="{{selected}}">
+        <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="social:notifications"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="maps:directions-car"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="gesture"></iron-icon></paper-tab>
+      </paper-tabs>
+      <iron-pages selected="{{selected}}">
+        <div id="people" class="emoji-section"></div>
+        <div id="nature" class="emoji-section"></div>
+        <div id="objects" class="emoji-section"></div>
+        <div id="places" class="emoji-section"></div>
+        <div id="symbols" class="emoji-section"></div>
+      </iron-pages>
+    </div>
   </template>
 
 </dom-module>
@@ -49,24 +106,57 @@
     ],
 
     properties: {
+      selected: {
+        type: Number,
+        value: 0
+      }
+    },
 
-      _charCounterStr: {
-        type: String,
-        value: '0'
+    ready: function() {
+      var start = new Date();
+      var all = {"people": [],
+                 "nature": [],
+                 "objects": [],
+                 "places": [],
+                 "symbols": []};
+
+      // Split by category.
+      for (var name in emojis) {
+        if (emojis[name]['category'])
+          all[emojis[name]['category']].push(emojis[name]['char']);
       }
 
+      var self = this;
+
+      // Add each category to the right section
+      for (var category in all) {
+        var list = this.$[category];
+        list.addEventListener('click', function(event) {
+          self._addEmoji(event.target.textContent);
+        });
+
+        for (var i = 0; i < all[category].length; i++) {
+          var s = document.createElement('span');
+          s.className = 'emoji-icon';
+          s.style.cssText ='cursor:pointer;padding-left:4px;';
+          s.innerHTML = all[category][i];
+          this.$[category].appendChild(s);
+        }
+      }
+
+      console.log("ready took: ", (new Date() - start));
     },
 
     _onClick: function() {
-      console.log("adsfasdf");
+      this.$.box.hidden = !this.$.box.hidden;
+    },
+
+    _addEmoji: function(emoji) {
       if (!this._element) {
         return;
       }
 
-      var text = ".";
-
       // Preserve the cursor position.
-
       var value = this._element.value;
       var start = this._element.selectionStart;
       var end = this._element.selectionEnd;
@@ -74,31 +164,19 @@
       var front = (value).substring(0, start);
       var back = (value).substring(end, value.length);
 
-      this._element.value = front + text + back;
-      this._element.selectionStart = start + text.length;
-      this._element.selectionEnd = start + text.length;
+      this._element.value = front + emoji + back;
+      this._element.selectionStart = start + emoji.length;
+      this._element.selectionEnd = start + emoji.length;
 
+      this._element._onInput();
       this._element.focus();
 
     },
 
     update: function(state) {
-      this._element = state.inputElement;
-      console.log("update");
-
-    //   if (!state.inputElement) {
-    //     return;
-    //   }
-    //
-    //   state.value = state.value || '';
-    //
-    //   // Account for the textarea's new lines.
-    //   var str = state.value.replace(/(\r\n|\n|\r)/g, '--').length;
-    //
-    //   if (state.inputElement.hasAttribute('maxlength')) {
-    //     str += '/' + state.inputElement.getAttribute('maxlength');
-    //   }
-    //   this._charCounterStr = str;
+      // Meeep. This should be maybe not like this.
+      if (!this._element)
+        this._element = state.inputElement;
     }
 
   });

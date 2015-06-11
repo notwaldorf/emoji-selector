@@ -1,4 +1,4 @@
-{
+var emojis = {
   "_comment": {
     "so": "this file comes from https://github.com/muan/emoji"
   },
@@ -20,11 +20,6 @@
   "blush": {
     "keywords": ["face", "smile", "happy", "flushed", "crush", "embarrassed", "shy", "joy"],
     "char": "😊",
-    "category": "people"
-  },
-  "relaxed": {
-    "keywords": ["face", "blush", "massage", "happiness"],
-    "char": "☺️",
     "category": "people"
   },
   "wink": {
