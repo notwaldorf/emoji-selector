@@ -94,37 +94,24 @@ Example:
 
     .emoji-icon {
       cursor: pointer;
-      border-radius: 50%;
       text-align: center;
+      display: inline-block;
       font-size: 18px;
       line-height: 24px;
       width: 24px;
       height: 24px;
-      padding-left: 2px;
-      padding-top: 2px;
+
+      /* >.< */
+      -webkit-transition: all .14s linear;
+    	-moz-transition: all .14s linear;
+    	-o-transition: all .14s linear;
+    	-ms-transition: all .14s linear;
+    	transition: all .14s linear;
     }
 
     .emoji-icon:hover {
-      -webkit-animation: icon-expand 140ms ease-out forwards;
-      animation: icon-expand 140ms ease-out forwards;
-    }
-
-    @-webkit-keyframes icon-expand {
-      0% {
-        transform: scale(1, 1);
-      }
-      100% {
-        transform: scale(1.5, 1.5);
-      }
-    }
-
-    @keyframes icon-expand {
-      0% {
-        transform: scale(1, 1);
-      }
-      100% {
-        transform: scale(1.5, 1.5);
-      }
+      transform: scale(1.3, 1.3);
+      -webkit-transform: scale(1.3, 1.3);
     }
   </style>
 
@@ -132,7 +119,10 @@ Example:
     <paper-icon-button icon="face"on-click="_onClick"></paper-icon-button>
 
     <div id="box" hidden>
-      <paper-input id="searchInput" placeholder="emoji search" no-label-float on-value-changed="_onInput"></paper-input>
+      <paper-input id="searchInput"
+          placeholder="emoji search" no-label-float
+          on-value-changed="_onInput"></paper-input>
+
       <paper-tabs selected="{{selected}}">
         <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
         <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
@@ -140,21 +130,22 @@ Example:
         <paper-tab><iron-icon icon="maps:directions-car"></iron-icon></paper-tab>
         <paper-tab><iron-icon icon="gesture"></iron-icon></paper-tab>
       </paper-tabs>
+
       <iron-pages selected="{{selected}}">
         <template is="dom-repeat" items="[[emojis]]" as="category">
           <div class="emoji-section">
             <template is="dom-repeat" items="[[category.items]]">
-              <span class="emoji-icon" on-click="_addEmoji">{{item.char}}</span>
+              <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
             </template>
           </div>
         </template>
-
         <div class="emoji-section">
           <template is="dom-repeat" id="resultList" items="{{searchResults}}">
-            <span class="emoji-icon" on-click="_addEmoji">{{item}}</span>
+            <div class="emoji-icon" on-click="_addEmoji">{{item}}</div>
           </template>
         </div>
       </iron-pages>
+
     </div>
   </template>
 
@@ -188,14 +179,11 @@ Example:
 
       searchResults: {
         type: Array,
-        value: [],
-        notify: true
+        value: []
       }
     },
 
     ready: function() {
-      // Save the raw json somewhere.
-
       this.emojis = [{ "name": "people",  "items" : [ ] },
                   { "name": "nature",  "items" : [ ] },
                   { "name": "objects", "items" : [ ] },
