@@ -31,17 +31,9 @@ search-for-emoji-keywords feature!
 
 Example:
 
-    <paper-input-container>
-      <emoji-selector></emoji-selector>
-      <label>boring input</label>
-      <input is="iron-input">
-    </paper-input-container>
-
-    <paper-input-container>
-      <emoji-selector></emoji-selector>
-      <label>autogrow-textarea</label>
-      <iron-autogrow-textarea class="paper-input-input"></iron-autogrow-textarea>
-    </paper-input-container>
+    <paper-input label="needs moar emoji">
+      <emoji-selector suffix></emoji-selector>
+    </paper-input>
 
 -->
 
@@ -54,7 +46,6 @@ Example:
 
     paper-tabs {
       height: 30px;
-      margin-bottom: 5px;
       --paper-tabs-selection-bar-color: var(--default-primary-color);
     }
 
@@ -65,7 +56,7 @@ Example:
     };
 
     iron-pages {
-      height: 140px;
+      height: 155px;
     }
 
     #box {
@@ -77,6 +68,7 @@ Example:
 
       width: 270px;
       height: 240px;
+      font-size: 15px;
 
       z-index: 2;
     }
@@ -93,6 +85,7 @@ Example:
       flex-direction: column;
       flex-wrap: wrap;
       padding-left: 8px;
+      padding-top: 5px;
     }
 
     .emoji-icon {
@@ -165,6 +158,15 @@ Example:
 
     properties: {
       /**
+       * The input element the emojis should be inserted to. If not specified,
+       * and the emoji-selector is used as a ``<paper-input>`` suffix element, then
+       * `inputTarget` will be this parent `paper-input` element.
+       */
+      inputTarget: {
+        type: Object
+      },
+
+      /**
        * The selected category.
        */
       selected: {
@@ -187,6 +189,8 @@ Example:
     },
 
     ready: function() {
+      this.inputTarget = Polymer.dom(this).parentNode;
+
       var request = new XMLHttpRequest();
       var url = this.resolveUrl('bower_components/emojilib/emojis.json');
       request.open('GET', url, true);
@@ -250,43 +254,36 @@ Example:
     },
 
     _addEmoji: function(event) {
-      if (!this._element) {
+      if (!this.inputTarget) {
         return;
       }
 
       var emoji = event.target.textContent;
 
-      // iron-textarea has a bindValue
+      // // iron-textarea has a bindValue
       var value = '';
-      if (this._element.bindValue)
-        value  =  this._element.bindValue;
-      else
-        value = this._element.value;
-
-      // This is needed to tell the paper-input-container to float the label.
-      var needsOnInput = value.length == 0;
+      if (this.inputTarget.bindValue)
+        value  =  this.inputTarget.bindValue;
+      else value = this.inputTarget.value;
 
       // Preserve the cursor position.
-      var start = this._element.selectionStart || value.length;
-      var end = this._element.selectionEnd || value.length + 1;
+      var start = this.inputTarget.selectionStart || value.length;
+      var end = this.inputTarget.selectionEnd || value.length + 1;
 
       var front = value.substring(0, start);
       var back = value.substring(end, value.length);
 
-      // for iron-textarea mostly.
-      if (this._element.bindValue)
-        this._element.bindValue = front + emoji + back;
+      // // for iron-textarea mostly.
+      if (this.inputTarget.bindValue)
+        this.inputTarget.bindValue = front + emoji + back;
       else
-        this._element.value = front + emoji + back;
+        this.inputTarget.value = front + emoji + back;
 
       // Restore the cursor position.
-      this._element.selectionStart = start + emoji.length;
-      this._element.selectionEnd = start + emoji.length;
+      this.inputTarget.selectionStart = start + emoji.length;
+      this.inputTarget.selectionEnd = start + emoji.length;
 
-      this._element.focus();
-
-      if (needsOnInput)
-        this._element._onInput();
+      this.inputTarget.focus();
 
       // Close the box.
       this._onClick();
@@ -320,8 +317,8 @@ Example:
 
     update: function(state) {
       // Meeep. This should be maybe not like this.
-      if (!this._element)
-        this._element = state.inputElement;
+      if (!this.inputTarget)
+        this.inputTarget = state.inputElement;
     }
 
   });
