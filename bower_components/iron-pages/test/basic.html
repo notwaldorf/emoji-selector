@@ -51,6 +51,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(pages.selected, undefined);
           });
 
+          test('null activateEvent', function() {
+            // `activateEvent` is not a useful feature for iron-pages and it can interfere
+            // with ux; ensure iron-pages has cleared any default `activateEvent`
+            assert.equal(pages.activateEvent, null);
+          });
+
           test('to iron-selected as selectedClass', function() {
             assert.equal(pages.selectedClass, 'iron-selected');
           });

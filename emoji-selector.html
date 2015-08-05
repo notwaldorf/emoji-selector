@@ -8,20 +8,19 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS
 -->
 
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../paper-tabs/paper-tabs.html">
-<link rel="import" href="../iron-pages/iron-pages.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../iron-icons/social-icons.html">
-<link rel="import" href="../iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../iron-input/iron-input.html">
-<link rel="import" href="../paper-input/paper-input-container.html">
-<link rel="import" href="../paper-input/paper-input-addon-behavior.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<script type="text/javascript" language="javascript" src="emoji.json"></script>
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+
+<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-input-container.html">
 
 <!--
 `emoji-selector` is a `paper-input-addon` component (see Polymer.PaperInput)
@@ -50,17 +49,11 @@ Example:
 <dom-module id="emoji-selector">
   <style>
     :host {
-      display: inline;
-
-      /* lol halp */
-      position: relative;
-      float: right;
-      right: -35px;
-      top: -35px
+      display: inline-block;
     }
 
     paper-tabs {
-      height: 40px;
+      height: 30px;
       margin-bottom: 5px;
       --paper-tabs-selection-bar-color: var(--default-primary-color);
     }
@@ -96,7 +89,7 @@ Example:
 
     .emoji-section {
       height: 100%;
-      overflow-y: scroll;
+      overflow-y: auto;
       flex-direction: column;
       flex-wrap: wrap;
       padding-left: 8px;
@@ -137,9 +130,12 @@ Example:
       <paper-tabs selected="{{selected}}" id="tabs" tabindex="0">
         <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
         <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="social:notifications"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="maps:directions-car"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="translate"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="maps:local-pizza"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="social:cake"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="maps:directions-walk"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="account-balance"></iron-icon></paper-tab>
+        <paper-tab><iron-icon icon="perm-phone-msg"></iron-icon></paper-tab>
+
       </paper-tabs>
 
       <iron-pages selected="{{selected}}">
@@ -167,10 +163,6 @@ Example:
 
     is: 'emoji-selector',
 
-    behaviors: [
-      Polymer.PaperInputAddonBehavior
-    ],
-
     properties: {
       /**
        * The selected category.
@@ -195,26 +187,49 @@ Example:
     },
 
     ready: function() {
-      this.emojis = [{ "name": "people",  "items" : [ ] },
-                  { "name": "nature",  "items" : [ ] },
-                  { "name": "objects", "items" : [ ] },
-                  { "name": "places",  "items" : [ ] },
-                  { "name": "symbols", "items" : [ ] }];
-      var indexes = { "people" : 0,
-                      "nature" : 1,
-                      "objects": 2,
-                      "places" : 3,
-                      "symbols": 4};
+      var request = new XMLHttpRequest();
+      var url = this.resolveUrl('bower_components/emojilib/emojis.json');
+      request.open('GET', url, true);
+      var self = this;
+
+      request.onload = function() {
+        if (request.status >= 200 && request.status < 400) {
+          allEmojis = JSON.parse(request.response);
+          self._emojisReady(allEmojis);
+        }
+      };
+      request.send();
+    },
+
+    _emojisReady: function(emojis) {
+      this.emojis = [{ 'name': 'people',  'items' : [ ] },
+                  { 'name': 'nature',  'items' : [ ] },
+                  { 'name': 'foodanddrink',  'items' : [ ] },
+                  { 'name': 'celebration',  'items' : [ ] },
+                  { 'name': 'activity',  'items' : [ ] },
+                  { 'name': 'travelandplaces', 'items' : [ ] },
+                  { 'name': 'objectsandsymbols', 'items' : [ ] },
+                  { 'name': 'flags', 'items' : [ ] }];
+      var indexes = { 'people' : 0,
+                      'nature' : 1,
+                      'foodanddrink' : 2,
+                      'celebration': 3,
+                      'activity' : 4,
+                      'travelandplaces': 5,
+                      'objectsandsymbols': 6,
+                      'flags': 7,
+                    };
+      this._searchPageIndex = 8;  // the page after the last legit emoji page.
 
       for (var name in emojis) {
         var category = emojis[name]['category'];
-        if (category) {
-          var index = indexes[category];
+        var index = indexes[category];
+        if (index !== undefined) {
           var keywords = emojis[name]['keywords'];
           if (keywords.indexOf(name) == -1)
             keywords.push(name);
 
-          this.emojis[index]["items"].push(
+          this.emojis[index]['items'].push(
               {'char': emojis[name]['char'],
                'keywords': keywords.join(' ').toLowerCase()});
         }
@@ -224,7 +239,7 @@ Example:
     },
 
     _onClick: function() {
-      if (this.selected != 5) {
+      if (this.selected != this._searchPageIndex) {
         this.$.searchInput.value = '';
         this.$.searchInput.focus();
       }
@@ -279,7 +294,7 @@ Example:
 
     _onInput: function(event) {
       var search = this.$.searchInput.value.toLowerCase();
-      if (search.trim() == '' && this.selected == 5) {
+      if (search.trim() == '' && this.selected == this._searchPageIndex) {
         this.selected = 0;
         return;
       }
@@ -287,7 +302,7 @@ Example:
       if (!this.emojis)
         return;
 
-      this.selected = 5;
+      this.selected = this._searchPageIndex;
       this.searchResults = [];
 
       // UGH

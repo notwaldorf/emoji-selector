@@ -8,6 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
 
 <script>
 
@@ -19,9 +20,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    *
    * The input element can be accessed by the `inputElement` property if you need to access
    * properties or methods that are not exposed.
-   * @polymerBehavior
+   * @polymerBehavior Polymer.PaperInputBehavior
    */
-  Polymer.PaperInputBehavior = {
+  Polymer.PaperInputBehaviorImpl = {
 
     properties: {
 
@@ -84,6 +85,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
+       * The datalist of the input (if any). This should match the id of an existing <datalist>. Bind this
+       * to the `<input is="iron-input">`'s `list` property.
+       */
+      list: {
+        type: String
+      },
+
+      /**
        * A pattern to validate the `input` with. Bind this to the `<input is="iron-input">`'s
        * `pattern` property.
        */
@@ -98,14 +107,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       required: {
         type: Boolean,
         value: false
-      },
-
-      /**
-       * The maximum length of the input value. Bind this to the `<input is="iron-input">`'s
-       * `maxlength` property.
-       */
-      maxlength: {
-        type: Number
       },
 
       /**
@@ -191,6 +192,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
+       * The maximum length of the input value. Bind this to the `<input is="iron-input">`'s
+       * `maxlength` property.
+       */
+      maxlength: {
+        type: Number
+      },
+
+      /**
+       * The minimum (numeric or date-time) input value.
+       * Bind this to the `<input is="iron-input">`'s `min` property.
+       */
+      min: {
+        type: String
+      },
+
+      /**
+       * The maximum (numeric or date-time) input value.
+       * Can be a String (e.g. `"2000-1-1"`) or a Number (e.g. `2`).
+       * Bind this to the `<input is="iron-input">`'s `max` property.
+       */
+      max: {
+        type: String
+      },
+
+      /**
+       * Limits the numeric or date-time increments.
+       * Bind this to the `<input is="iron-input">`'s `step` property.
+       */
+      step: {
+        type: String
+      },
+
+      /**
        * Bind this to the `<input is="iron-input">`'s `name` property.
        */
       name: {
@@ -221,6 +255,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type: Number
       },
 
+      // Nonstandard attributes for binding if needed
+
+      /**
+       * Bind this to the `<input is="iron-input">`'s `autocapitalize` property.
+       */
+      autocapitalize: {
+        type: String,
+        value: 'none'
+      },
+
+      /**
+       * Bind this to the `<input is="iron-input">`'s `autocorrect` property.
+       */
+      autocorrect: {
+        type: String,
+        value: 'off'
+      },
+
       _ariaDescribedBy: {
         type: String,
         value: ''
@@ -231,6 +283,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     listeners: {
       'addon-attached': '_onAddonAttached'
     },
+
+    observers: [
+      '_focusedControlStateChanged(focused)'
+    ],
 
     /**
      * Returns a reference to the input element.
@@ -272,7 +328,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     /**
      * Restores the cursor to its original position after updating the value.
-     * @param {String} newValue The value that should be saved.
+     * @param {string} newValue The value that should be saved.
      */
     updateValueAndPreserveCaret: function(newValue) {
       // Not all elements might have selection, and even if they have the
@@ -296,6 +352,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       return placeholder || alwaysFloatLabel;
     },
 
+    _focusedControlStateChanged: function(focused) {
+      // IronControlState stops the focus and blur events in order to redispatch them on the host
+      // element, but paper-input-container listens to those events. Since there are more
+      // pending work on focus/blur in IronControlState, I'm putting in this hack to get the
+      // input focus state working for now.
+      if (!this.$.container) {
+        this.$.container = Polymer.dom(this.root).querySelector('paper-input-container');
+        if (!this.$.container) {
+          return;
+        }
+      }
+      if (focused) {
+        this.$.container._onFocus();
+      } else {
+        this.$.container._onBlur();
+      }
+    },
+
     _updateAriaLabelledBy: function() {
       var label = Polymer.dom(this.root).querySelector('label');
       if (!label) {
@@ -313,5 +387,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
   };
+
+  /** @polymerBehavior */
+  Polymer.PaperInputBehavior = [Polymer.IronControlState, Polymer.PaperInputBehaviorImpl];
 
 </script>

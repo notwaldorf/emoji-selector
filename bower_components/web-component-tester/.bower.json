@@ -29,15 +29,16 @@
     "chai": "^2.3.0",
     "lodash": "^3.7.0",
     "sinon-chai": "^2.7.0",
-    "sinonjs": "^1.14.1"
+    "sinonjs": "^1.14.1",
+    "accessibility-developer-tools": "GoogleChrome/accessibility-developer-tools#^2.7.0"
   },
+  "version": "3.3.9",
   "homepage": "https://github.com/Polymer/web-component-tester",
-  "version": "3.1.7",
-  "_release": "3.1.7",
+  "_release": "3.3.9",
   "_resolution": {
     "type": "version",
-    "tag": "v3.1.7",
-    "commit": "a9c61e532eb2af3935fc75092f194c9aa4f45ebb"
+    "tag": "v3.3.9",
+    "commit": "18f4e71cda6e62d83b857a7a8f35f6e7b31f793f"
   },
   "_source": "git://github.com/Polymer/web-component-tester.git",
   "_target": "*",

@@ -12,24 +12,22 @@
 
   <link rel="import" href="../emoji-selector.html">
 
-  <link rel="import" href="../bower_components/paper-input/paper-input-container.html">
+  <link rel="import" href="../bower_components/paper-input/paper-input.html">
   <link rel="import" href="../bower_components/iron-input/iron-input.html">
   <link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
   <link rel="stylesheet" href="../bower_components/paper-styles/demo.css">
 
   <style is="custom-style">
-    paper-input-container {
+    paper-input {
       width: 200px;
     }
   </style>
 </head>
 <body unresolved>
-  <paper-input-container>
-    <emoji-selector></emoji-selector>
-    <label>needs moar emoji!!</label>
-    <input is="iron-input" autofocus>
-  </paper-input-container>
+  <paper-input label="needs moar emoji">
+    <emoji-selector suffix></emoji-selector>
+  </paper-input>
 <!--
   <paper-input-container>
     <emoji-selector></emoji-selector>
