@@ -9,12 +9,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
-  <link rel="import" href="../emoji-selector.html">
-
   <link rel="import" href="../bower_components/paper-input/paper-input.html">
-  <link rel="import" href="../bower_components/iron-input/iron-input.html">
-  <link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+  <link rel="import" href="../bower_components/paper-styles/color.html">
+  <link rel="import" href="../emoji-selector.html">
 
   <link rel="stylesheet" href="../bower_components/paper-styles/demo.css">
 
@@ -22,11 +19,25 @@
     paper-input {
       width: 200px;
     }
+    emoji-selector.shiny {
+      --emoji-selector-background-color: var(--paper-grey-700);
+      --emoji-selector-icon-color: white;
+      --paper-input-container-color: white;
+      --paper-input-container-input-color: white;
+      --paper-input-container-focus-color: var(--paper-yellow-a200);
+      --paper-tabs-selection-bar-color: var(--paper-yellow-a200);
+      --paper-tab-ink: var(--paper-yellow-a200);
+    }
+
   </style>
 </head>
 <body unresolved>
   <paper-input label="needs moar emoji">
     <emoji-selector suffix></emoji-selector>
+  </paper-input>
+
+  <paper-input label="my selector is shiny">
+    <emoji-selector class="shiny" suffix></emoji-selector>
   </paper-input>
 
 <!--

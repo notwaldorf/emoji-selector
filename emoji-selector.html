@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../bower_components/iron-icons/maps-icons.html">
-<link rel="import" href="../bower_components/paper-input/paper-input">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-styles/default-theme.html">
 
 <!--
@@ -42,6 +42,11 @@ Custom property | Description | Default
 `--emoji-selector` | Mixin applied to the popup | `{}`
 `--emoji-selector-icon` | Mixin applied to the emoji icons | `{}`
 `--emoji-selector-icon-hover` | Mixin applied to the emoji icons when hovered | `{}`
+
+You can also use any of the Polymer.PaperInputContainer styles to style the
+search input, or the Polymer.PaperTabs and Polymer.PaperTab styles to style
+the category tabs.
+
 -->
 
 </style>
@@ -49,11 +54,11 @@ Custom property | Description | Default
   <style>
     :host {
       display: inline-block;
+      --paper-tabs-selection-bar-color: var(--default-primary-color);
     }
 
     paper-tabs {
       height: 30px;
-      --paper-tabs-selection-bar-color: var(--default-primary-color);
       color: var(--emoji-selector-icon-color, black);
     }
 
