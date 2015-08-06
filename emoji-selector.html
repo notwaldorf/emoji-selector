@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="bower_components/iron-icon/iron-icon.html">
@@ -72,27 +73,27 @@ the category tabs.
       height: 155px;
     }
 
-    #box {
+    #menu {
+      padding: 0;
+    }
+
+    .box {
       background: var(--emoji-selector-background-color, white);
       border-radius: 2px;
       box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
-
-      position: absolute;
 
       width: 270px;
       height: 240px;
       font-size: 15px;
 
-      z-index: 2;
-
       @apply(--emoji-selector);
     }
 
-    @media (max-width: 400px) {
-      #box {
+    /*@media (max-width: 400px) {
+      .box {
         left: -180px;
       }
-    }
+    }*/
 
     .emoji-section {
       height: 100%;
@@ -130,38 +131,45 @@ the category tabs.
   </style>
 
   <template>
-    <paper-icon-button icon="face"on-click="_onClick"></paper-icon-button>
 
-    <div id="box" hidden>
-      <paper-input no-label-float id="searchInput" placeholder="find an emoji!"
-        on-input="_onInput">
-      </paper-input>
+    <paper-menu-button id="menu"
+        vertical-align="top"
+        horizontal-align="left">
+      <paper-icon-button icon="face" class="dropdown-trigger"></paper-icon-button>
+      <paper-menu class="dropdown-content">
+        <div class="box">
+          <paper-input no-label-float id="searchInput" placeholder="find an emoji!"
+            on-input="_onInput">
+          </paper-input>
 
-      <paper-tabs selected="{{selected}}" id="tabs" tabindex="0">
-        <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="maps:local-pizza"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="social:cake"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="maps:directions-walk"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="account-balance"></iron-icon></paper-tab>
-        <paper-tab><iron-icon icon="perm-phone-msg"></iron-icon></paper-tab>
-      </paper-tabs>
+          <paper-tabs selected="{{selected}}" id="tabs" tabindex="0">
+            <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
+            <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
+            <paper-tab><iron-icon icon="maps:local-pizza"></iron-icon></paper-tab>
+            <paper-tab><iron-icon icon="social:cake"></iron-icon></paper-tab>
+            <paper-tab><iron-icon icon="maps:directions-walk"></iron-icon></paper-tab>
+            <paper-tab><iron-icon icon="account-balance"></iron-icon></paper-tab>
+            <paper-tab><iron-icon icon="perm-phone-msg"></iron-icon></paper-tab>
+          </paper-tabs>
 
-      <iron-pages selected="{{selected}}">
-        <template is="dom-repeat" items="[[emojis]]" as="category">
-          <div class="emoji-section">
-            <template is="dom-repeat" items="[[category.items]]">
-              <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
+          <iron-pages selected="{{selected}}">
+            <template is="dom-repeat" items="[[emojis]]" as="category">
+              <div class="emoji-section">
+                <template is="dom-repeat" items="[[category.items]]">
+                  <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
+                </template>
+              </div>
             </template>
-          </div>
-        </template>
-        <div class="emoji-section">
-          <template is="dom-repeat" id="resultList" items="{{searchResults}}">
-            <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
-          </template>
+            <div class="emoji-section">
+              <template is="dom-repeat" id="resultList" items="{{searchResults}}">
+                <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
+              </template>
+            </div>
+          </iron-pages>
         </div>
-      </iron-pages>
-    </div>
+      </paper-menu>
+    </paper-menu-button>
+
   </template>
 
 </dom-module>
@@ -201,6 +209,10 @@ the category tabs.
         type: Array,
         value: []
       }
+    },
+
+    listeners: {
+      'iron-activate': '_onIronActivate'
     },
 
     ready: function() {
@@ -257,6 +269,10 @@ the category tabs.
       this.selected = 0;
     },
 
+    _onIronActivate: function(event) {
+      this.$.menu.opened = true;
+    },
+
     _onClick: function() {
       this.$.searchInput.focus();
       if (this.selected != this._searchPageIndex) {
@@ -264,7 +280,7 @@ the category tabs.
       }
       this.$.searchInput.selectionStart = 0;
 
-      this.$.box.hidden = !this.$.box.hidden;
+      this.$.menu.close();
       this.$.tabs.notifyResize();
     },
 
