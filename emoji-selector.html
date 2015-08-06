@@ -139,7 +139,7 @@ the category tabs.
       <paper-menu class="dropdown-content">
         <div class="box">
           <paper-input no-label-float id="searchInput" placeholder="find an emoji!"
-            on-input="_onInput">
+            on-input="_onSearchInput">
           </paper-input>
 
           <paper-tabs selected="{{selected}}" id="tabs" tabindex="0">
@@ -156,13 +156,13 @@ the category tabs.
             <template is="dom-repeat" items="[[emojis]]" as="category">
               <div class="emoji-section">
                 <template is="dom-repeat" items="[[category.items]]">
-                  <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
+                  <div class="emoji-icon" on-click="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
                 </template>
               </div>
             </template>
             <div class="emoji-section">
               <template is="dom-repeat" id="resultList" items="{{searchResults}}">
-                <div class="emoji-icon" on-click="_addEmoji" title="{{item.keywords}}">{{item.char}}</div>
+                <div class="emoji-icon" on-click="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
               </template>
             </div>
           </iron-pages>
@@ -217,7 +217,18 @@ the category tabs.
 
     ready: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
+      this._loadEmojiLib();
+    },
 
+    _onIronActivate: function(event) {
+      // Temp hack.
+      this.$.menu.opened = true;
+    },
+
+    /**
+     * Load and parse the emojis into something we can use.
+     */
+    _loadEmojiLib: function() {
       var request = new XMLHttpRequest();
       var url = this.resolveUrl('bower_components/emojilib/emojis.json');
       request.open('GET', url, true);
@@ -225,14 +236,13 @@ the category tabs.
 
       request.onload = function() {
         if (request.status >= 200 && request.status < 400) {
-          allEmojis = JSON.parse(request.response);
-          self._emojisReady(allEmojis);
+          self._parseEmojiLib(JSON.parse(request.response));
         }
       };
       request.send();
     },
 
-    _emojisReady: function(emojis) {
+    _parseEmojiLib: function(emojis) {
       this.emojis = [{ 'name': 'people',  'items' : [ ] },
                   { 'name': 'nature',  'items' : [ ] },
                   { 'name': 'foodanddrink',  'items' : [ ] },
@@ -269,47 +279,18 @@ the category tabs.
       this.selected = 0;
     },
 
-    _onIronActivate: function(event) {
-      this.$.menu.opened = true;
-    },
-
-    _onClick: function() {
-      this.$.searchInput.focus();
-      if (this.selected != this._searchPageIndex) {
-        this.$.searchInput.value = '';
-      }
-      this.$.searchInput.selectionStart = 0;
-
-      this.$.menu.close();
-      this.$.tabs.notifyResize();
-    },
-
-    _addEmoji: function(event) {
-      if (!this.inputTarget) {
+    _onEmojiClick: function(event) {
+      if (!this.inputTarget)
         return;
-      }
 
       var emoji = event.target.textContent;
 
-      // iron-autogrow-textarea needs to use a bindValue.
       var value = '';
       if (this.inputTarget.value)
         value = this.inputTarget.value;
 
-      // Preserve the cursor position.
-      var start = this.inputTarget.selectionStart || value.length;
-      var end = this.inputTarget.selectionEnd || value.length + 1;
-
-      var front = value.substring(0, start);
-      var back = value.substring(end, value.length);
-
-      // iron-autogrow-textarea needs to use a bindValue.
-      var newValue = front + emoji + back;
-      this.inputTarget.value = newValue;
-
-      // Restore the cursor position.
-      this.inputTarget.selectionStart = start + emoji.length;
-      this.inputTarget.selectionEnd = start + emoji.length;
+      // Carets are witchcraft.
+      var newValue = this._updateValueAndPreserveCaret(value, emoji);
 
       // This is a bit of a hack, but an iron-input or iron-autogrow-textarea
       // need to get notified to update their `bind-value`. And `onInput`
@@ -321,10 +302,10 @@ the category tabs.
       this.inputTarget.focus();
 
       // Close the box.
-      this._onClick();
+      this._closeMenu();
     },
 
-    _onInput: function(event) {
+    _onSearchInput: function(event) {
       var search = this.$.searchInput.value.toLowerCase();
       if (search.trim() == '' && this.selected == this._searchPageIndex) {
         this.selected = 0;
@@ -348,6 +329,50 @@ the category tabs.
           }
         }
       }
+    },
+
+    _closeMenu: function() {
+      this.$.searchInput.focus();
+      if (this.selected != this._searchPageIndex) {
+        this.$.searchInput.value = '';
+      }
+      this.$.searchInput.selectionStart = 0;
+
+      this.$.menu.close();
+      this.$.tabs.notifyResize();
+    },
+
+    _updateValueAndPreserveCaret: function(value, emoji) {
+      // Preserve the cursor position. If this is a paper-input, we really
+      // care about the cursor position of the underlying iron-input.
+      var underlyingIronInput = this.inputTarget.inputElement;
+
+      var start, end;
+
+      if (underlyingIronInput) {
+        start = underlyingIronInput.selectionStart || value.length;
+        end = underlyingIronInput.selectionEnd || value.length + 1;
+      } else {
+        start = this.inputTarget.selectionStart || value.length;
+        end = this.inputTarget.selectionEnd || value.length + 1;
+      }
+
+      var front = value.substring(0, start);
+      var back = value.substring(end, value.length);
+      var newValue = front + emoji + back;
+
+      this.inputTarget.value = newValue;
+
+      // Restore the cursor position. See the same note about paper-input above.
+      if (underlyingIronInput) {
+        underlyingIronInput.selectionStart = start + emoji.length;
+        underlyingIronInput.selectionEnd = start + emoji.length;
+      } else {
+        this.inputTarget.selectionStart = start + emoji.length;
+        this.inputTarget.selectionEnd = start + emoji.length;
+      }
+
+      return newValue;
     }
   });
 
