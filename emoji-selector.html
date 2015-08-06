@@ -123,13 +123,21 @@ the category tabs.
       -webkit-transform: scale(1.3, 1.3);
       @apply(--emoji-selector-icon-hover);
     }
+
+    .clear-button {
+      color: #757575;
+      --iron-icon-width: 15px;
+      --iron-icon-height: 15px;
+      padding: 0px 4px;
+      margin-left: 4px;
+    }
   </style>
 
   <template>
     <iron-media-query query="(max-width: 375px)" query-matches="{{smallScreen}}"></iron-media-query>
 
     <paper-menu-button id="menu"
-        vertical-align="top"
+        vertical-align="top" vertical-offset="40"
         horizontal-align="[[_computeHorizontalAlign(smallScreen)]]"
         ignore-activate>
       <paper-icon-button icon="face" class="dropdown-trigger"></paper-icon-button>
@@ -137,6 +145,9 @@ the category tabs.
         <div class="box">
           <paper-input no-label-float id="searchInput" placeholder="find an emoji!"
             on-input="_onSearchInput">
+            <paper-icon-button suffix on-tap="_onClearSearchInput" class="clear-button"
+                icon="clear" alt="clear" title="clear" tabindex="0">
+            </paper-icon-button>
           </paper-input>
 
           <paper-tabs selected="{{selected}}" id="tabs" tabindex="0">
@@ -153,13 +164,13 @@ the category tabs.
             <template is="dom-repeat" items="[[emojis]]" as="category">
               <div class="emoji-section">
                 <template is="dom-repeat" items="[[category.items]]">
-                  <div class="emoji-icon" on-click="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
+                  <div class="emoji-icon" on-tap="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
                 </template>
               </div>
             </template>
             <div class="emoji-section">
               <template is="dom-repeat" id="resultList" items="{{searchResults}}">
-                <div class="emoji-icon" on-click="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
+                <div class="emoji-icon" on-tap="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
               </template>
             </div>
           </iron-pages>
@@ -322,6 +333,11 @@ the category tabs.
           }
         }
       }
+    },
+
+    _onClearSearchInput: function() {
+      this.$.searchInput.value = '';
+      this.selected = 0;
     },
 
     _closeMenu: function() {
