@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
@@ -143,7 +144,7 @@ the category tabs.
       <paper-icon-button icon="face" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         <div class="box">
-          <paper-input no-label-float id="searchInput" placeholder="find an emoji!"
+          <paper-input autofocus no-label-float id="searchInput" placeholder="find an emoji!"
             on-input="_onSearchInput">
             <paper-icon-button suffix on-tap="_onClearSearchInput" class="clear-button"
                 icon="clear" alt="clear" title="clear" tabindex="0">

@@ -22,6 +22,7 @@
       display: block;
       width: 200px;
     }
+
     emoji-selector.shiny {
       --emoji-selector-background-color: var(--paper-light-green-400);
       --emoji-selector-icon-color: white;
@@ -33,6 +34,12 @@
       --paper-input-container-input-color: white !important;
       --paper-input-container-focus-color: var(--paper-light-blue-500) !important;
     }
+
+    paper-input.shiny {
+      --paper-input-container-color: var(--paper-light-blue-500);
+      --paper-input-container-input-color: var(--paper-light-blue-500);
+      --paper-input-container-focus-color: var(--paper-light-green-500) !important;
+    }
   </style>
 </head>
 <body unresolved>
@@ -41,7 +48,7 @@
     <emoji-selector suffix></emoji-selector>
   </paper-input>
 
-  <paper-input label="my selector is shiny">
+  <paper-input class="shiny" label="shiny all the things">
     <emoji-selector class="shiny" suffix></emoji-selector>
   </paper-input>
 
