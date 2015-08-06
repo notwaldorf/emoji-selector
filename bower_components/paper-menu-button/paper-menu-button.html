@@ -202,6 +202,15 @@ Custom property | Description | Default
         },
 
         /**
+         * Set to true to disable automatically closing the dropdown after
+         * a selection has been made.
+         */
+        ignoreActivate: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
          * An animation config. If provided, this will be used to animate the
          * opening of the dropdown.
          */
@@ -298,7 +307,9 @@ Custom property | Description | Default
        * set to `"iron-activate"`.
        */
       _onIronActivate: function(event) {
-        this.close();
+        if (!this.ignoreActivate) {
+          this.close();
+        }
       },
 
       /**
@@ -336,4 +347,3 @@ Custom property | Description | Default
     Polymer.PaperMenuButton = PaperMenuButton;
   })();
 </script>
-

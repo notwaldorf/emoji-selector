@@ -90,12 +90,6 @@ the category tabs.
       @apply(--emoji-selector);
     }
 
-    /*@media (max-width: 400px) {
-      .box {
-        left: -180px;
-      }
-    }*/
-
     .emoji-section {
       height: 100%;
       overflow-y: auto;
@@ -136,7 +130,8 @@ the category tabs.
 
     <paper-menu-button id="menu"
         vertical-align="top"
-        horizontal-align="[[_computeHorizontalAlign(smallScreen)]]">
+        horizontal-align="[[_computeHorizontalAlign(smallScreen)]]"
+        ignore-activate>
       <paper-icon-button icon="face" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         <div class="box">
@@ -218,18 +213,9 @@ the category tabs.
       }
     },
 
-    listeners: {
-      'iron-activate': '_onIronActivate'
-    },
-
     ready: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
       this._loadEmojiLib();
-    },
-
-    _onIronActivate: function(event) {
-      // Temp hack.
-      this.$.menu.opened = true;
     },
 
     /**
