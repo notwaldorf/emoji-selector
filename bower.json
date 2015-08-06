@@ -15,6 +15,7 @@
     "iron-icon": "PolymerElements/iron-icon#^1.0.0",
     "paper-tabs": "PolymerElements/paper-tabs#^1.0.0",
     "iron-pages": "PolymerElements/iron-pages#^1.0.0",
+    "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
     "emojilib": "~1.0.0"
   },
   "devDependencies": {

@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-styles/default-theme.html">
+<link rel="import" href="bower_components/iron-media-query/iron-media-query.html">
 
 <!--
 `emoji-selector` is a `paper-input-addon` component (see Polymer.PaperInput)
@@ -63,7 +64,7 @@ the category tabs.
       color: var(--emoji-selector-icon-color, black);
     }
 
-    paper-input {
+    #searchInput {
       --paper-input-container-input: {
         text-align: center;
       };
@@ -131,10 +132,11 @@ the category tabs.
   </style>
 
   <template>
+    <iron-media-query query="(max-width: 375px)" query-matches="{{smallScreen}}"></iron-media-query>
 
     <paper-menu-button id="menu"
         vertical-align="top"
-        horizontal-align="left">
+        horizontal-align="[[_computeHorizontalAlign(smallScreen)]]">
       <paper-icon-button icon="face" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         <div class="box">
@@ -208,6 +210,11 @@ the category tabs.
       searchResults: {
         type: Array,
         value: []
+      },
+
+      smallScreen: {
+        type: Boolean,
+        value: false
       }
     },
 
@@ -373,6 +380,10 @@ the category tabs.
       }
 
       return newValue;
+    },
+
+    _computeHorizontalAlign: function(smallScreen) {
+      return smallScreen ? 'right': 'left';
     }
   });
 
