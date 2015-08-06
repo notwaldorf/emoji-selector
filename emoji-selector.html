@@ -275,11 +275,10 @@ the category tabs.
 
       var emoji = event.target.textContent;
 
-      // // iron-textarea has a bindValue
+      // iron-autogrow-textarea needs to use a bindValue.
       var value = '';
-      if (this.inputTarget.bindValue)
-        value  =  this.inputTarget.bindValue;
-      else value = this.inputTarget.value;
+      if (this.inputTarget.value)
+        value = this.inputTarget.value;
 
       // Preserve the cursor position.
       var start = this.inputTarget.selectionStart || value.length;
@@ -288,15 +287,20 @@ the category tabs.
       var front = value.substring(0, start);
       var back = value.substring(end, value.length);
 
-      // // for iron-textarea mostly.
-      if (this.inputTarget.bindValue)
-        this.inputTarget.bindValue = front + emoji + back;
-      else
-        this.inputTarget.value = front + emoji + back;
+      // iron-autogrow-textarea needs to use a bindValue.
+      var newValue = front + emoji + back;
+      this.inputTarget.value = newValue;
 
       // Restore the cursor position.
       this.inputTarget.selectionStart = start + emoji.length;
       this.inputTarget.selectionEnd = start + emoji.length;
+
+      // This is a bit of a hack, but an iron-input or iron-autogrow-textarea
+      // need to get notified to update their `bind-value`. And `onInput`
+      // is a listener method, so fake the bit of the event it cares about.
+      // Gross.
+      if (this.inputTarget._onInput)
+        this.inputTarget._onInput({target: {value: newValue}});
 
       this.inputTarget.focus();
 
