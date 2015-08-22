@@ -169,7 +169,7 @@ the category tabs.
           <iron-pages selected="{{selected}}">
             <div class="emoji-section">
               <template is="dom-repeat" id="resultList" items="{{recentUsed}}">
-                <div class="emoji-icon" on-tap="_onEmojiClick" title="{{item.keywords}}">{{item.char}}</div>
+                <div class="emoji-icon" on-tap="_onEmojiClick">{{item.char}}</div>
               </template>
             </div>
             <template is="dom-repeat" items="[[emojis]]" as="category">
@@ -241,37 +241,42 @@ the category tabs.
       /**
        * simple helper vars
        */
+      prevTab: {
+        type: Number,
+        value: 0
+      },
+      
       searchResults: {
         type: Array,
         value: []
       },
-
-      smallScreen: {
+      
+      searchActive: {
         type: Boolean,
         value: false
       },
-      
-      clearSearchHidden: {
+
+      smallScreen: {
         type: Boolean,
         value: false
       }
     },
 
     ready: function() {
+      this.inputTarget = Polymer.dom(this).parentNode;
+      this._loadEmojiLib();
+      
       this.recentEmojis = JSON.parse(localStorage.getItem('recentEmojis'));
       if (this.recentEmojis === null)
       {
-        this.selected = 1
+        this.selected = 1;
         this.recentEmojis = new Object();
       }
       else
       {
-        this.selected = 0
+        this.selected = 0;
         this._updateRecentEmoji(this.recentEmojis)
       }
-      
-      this.inputTarget = Polymer.dom(this).parentNode;
-      this._loadEmojiLib();
     },
 
     /**
@@ -324,7 +329,6 @@ the category tabs.
                'keywords': keywords.join(' ').toLowerCase()});
         }
       }
-
     },
     
     _updateRecentEmoji: function(obj)
@@ -341,15 +345,15 @@ the category tabs.
       
       for (var i = 0; i < sortable.length; i++) {
         this.push('recentUsed',
-            {'char': sortable[i][0],
-             'keywords': 'blub'});
+            {'char': sortable[i][0]});
       }
+      //TODO there should be an User option if he wants to open the last tab or the recently used ones
+      //this.selected = 0;
     },
 
     _onEmojiClick: function(event) {
       if (!this.inputTarget)
         return;
-
       var emoji = event.target.textContent;
 
       //is it allready in the recent tab? then count it up
@@ -385,23 +389,21 @@ the category tabs.
     },
 
     _onSearchInput: function(event) {
-      if (this.$.searchInput.value == '')
-      {
-        this.clearSearchHidden = false;
-        this.toggleClass('hide',true,this.$.clearSearch)
-      }
-      else if(!this.clearSearchHidden)
-      {
-        this.clearSearchHidden = true;
-        this.toggleClass('hide',false,this.$.clearSearch)
-      }
-      
       var search = this.$.searchInput.value.toLowerCase();
       if (search.trim() == '' && this.selected == this._searchPageIndex) {
-        this.selected = 0;
+        this.toggleClass('hide',true,this.$.clearSearch)
+        this.selected = this.prevTab;
+        this.searchActive = false;
         return;
       }
-
+      
+      if(!this.searchActive)
+      {
+        this.prevTab = this.selected;
+        this.searchActive = true;
+        this.toggleClass('hide',false,this.$.clearSearch)
+      }
+        
       if (!this.emojis)
         return;
 
@@ -422,10 +424,10 @@ the category tabs.
     },
 
     _onClearSearchInput: function() {
-      this.clearSearchHidden = false;
+      this.searchActive = false;
       this.toggleClass('hide',true,this.$.clearSearch)
       this.$.searchInput.value = '';
-      this.selected = 0;
+      this.selected = this.prevTab;
     },
 
     _closeMenu: function() {
