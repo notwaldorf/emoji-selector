@@ -71,6 +71,10 @@ the category tabs.
       };
     };
 
+    .hide {
+      display: none;
+    }
+
     iron-pages {
       height: 155px;
     }
@@ -146,7 +150,7 @@ the category tabs.
         <div class="box">
           <paper-input autofocus no-label-float id="searchInput" placeholder="find an emoji!"
             on-input="_onSearchInput">
-            <paper-icon-button suffix on-tap="_onClearSearchInput" class="clear-button"
+            <paper-icon-button suffix on-tap="_onClearSearchInput" id="clearSearch" class="clear-button hide"
                 icon="clear" alt="clear" title="clear" tabindex="0">
             </paper-icon-button>
           </paper-input>
@@ -214,12 +218,20 @@ the category tabs.
         value: []
       },
 
+      /**
+       * simple helper vars
+       */
       searchResults: {
         type: Array,
         value: []
       },
 
       smallScreen: {
+        type: Boolean,
+        value: false
+      },
+      
+      clearSearchHidden: {
         type: Boolean,
         value: false
       }
@@ -311,6 +323,17 @@ the category tabs.
     },
 
     _onSearchInput: function(event) {
+      if (this.$.searchInput.value == '')
+      {
+        this.clearSearchHidden = false;
+        this.toggleClass('hide',true,this.$.clearSearch)
+      }
+      else if(!this.clearSearchHidden)
+      {
+        this.clearSearchHidden = true;
+        this.toggleClass('hide',false,this.$.clearSearch)
+      }
+      
       var search = this.$.searchInput.value.toLowerCase();
       if (search.trim() == '' && this.selected == this._searchPageIndex) {
         this.selected = 0;
@@ -337,6 +360,8 @@ the category tabs.
     },
 
     _onClearSearchInput: function() {
+      this.clearSearchHidden = false;
+      this.toggleClass('hide',true,this.$.clearSearch)
       this.$.searchInput.value = '';
       this.selected = 0;
     },
