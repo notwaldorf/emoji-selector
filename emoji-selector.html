@@ -71,6 +71,10 @@ the category tabs.
       };
     };
 
+    .hide {
+      display: none;
+    }
+
     iron-pages {
       height: 155px;
     }
@@ -146,12 +150,13 @@ the category tabs.
         <div class="box">
           <paper-input autofocus no-label-float id="searchInput" placeholder="find an emoji!"
             on-input="_onSearchInput">
-            <paper-icon-button suffix on-tap="_onClearSearchInput" class="clear-button"
+            <paper-icon-button suffix on-tap="_onClearSearchInput" id="clearSearch" class="clear-button hide"
                 icon="clear" alt="clear" title="clear" tabindex="0">
             </paper-icon-button>
           </paper-input>
 
           <paper-tabs selected="{{selected}}" id="tabs" tabindex="0">
+            <paper-tab><iron-icon icon="icons:history"></iron-icon></paper-tab>
             <paper-tab><iron-icon icon="social:mood"></iron-icon></paper-tab>
             <paper-tab><iron-icon icon="maps:local-florist"></iron-icon></paper-tab>
             <paper-tab><iron-icon icon="maps:local-pizza"></iron-icon></paper-tab>
@@ -162,6 +167,11 @@ the category tabs.
           </paper-tabs>
 
           <iron-pages selected="{{selected}}">
+            <div class="emoji-section">
+              <template is="dom-repeat" id="resultList" items="{{recentUsed}}">
+                <div class="emoji-icon" on-tap="_onEmojiClick">{{item.char}}</div>
+              </template>
+            </div>
             <template is="dom-repeat" items="[[emojis]]" as="category">
               <div class="emoji-section">
                 <template is="dom-repeat" items="[[category.items]]">
@@ -214,9 +224,36 @@ the category tabs.
         value: []
       },
 
+      /**
+       * A list of all emojis, used recently.
+       */
+       
+      recentEmojis: {
+        type: Object,
+        value: {}
+      },
+      
+      recentUsed: {
+        type: Array,
+        value: []
+      },
+
+      /**
+       * simple helper vars
+       */
+      prevTab: {
+        type: Number,
+        value: 0
+      },
+      
       searchResults: {
         type: Array,
         value: []
+      },
+      
+      searchActive: {
+        type: Boolean,
+        value: false
       },
 
       smallScreen: {
@@ -228,6 +265,18 @@ the category tabs.
     ready: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
       this._loadEmojiLib();
+      
+      this.recentEmojis = JSON.parse(localStorage.getItem('recentEmojis'));
+      if (this.recentEmojis === null)
+      {
+        this.selected = 1;
+        this.recentEmojis = new Object();
+      }
+      else
+      {
+        this.selected = 0;
+        this._updateRecentEmoji(this.recentEmojis)
+      }
     },
 
     /**
@@ -265,7 +314,7 @@ the category tabs.
                       'objectsandsymbols': 6,
                       'flags': 7,
                     };
-      this._searchPageIndex = 8;  // the page after the last legit emoji page.
+      this._searchPageIndex = 9;  // the page after the last legit emoji page.
 
       for (var name in emojis) {
         var category = emojis[name]['category'];
@@ -280,15 +329,44 @@ the category tabs.
                'keywords': keywords.join(' ').toLowerCase()});
         }
       }
+    },
+    
+    _updateRecentEmoji: function(obj)
+    {
+      this.recentUsed = [];
+      //for sorting we will need an array
+      var sortable = [];
+      for (var key in obj)
+        sortable.push([key, obj[key]])
 
-      this.selected = 0;
+      sortable.sort(function(a,b){
+        return a[1] < b[1];
+      })
+      
+      for (var i = 0; i < sortable.length; i++) {
+        this.push('recentUsed',
+            {'char': sortable[i][0]});
+      }
+      //TODO there should be an User option if he wants to open the last tab or the recently used ones
+      //this.selected = 0;
     },
 
     _onEmojiClick: function(event) {
       if (!this.inputTarget)
         return;
-
       var emoji = event.target.textContent;
+
+      //is it allready in the recent tab? then count it up
+      if(typeof this.recentEmojis[emoji] == 'undefined')
+         this.recentEmojis[emoji] = 1
+      else
+        ++this.recentEmojis[emoji];       
+
+      //sort it an put it into recentEmojis
+      this._updateRecentEmoji(this.recentEmojis);
+
+      //save it to local Storage
+      localStorage.setItem('recentEmojis', JSON.stringify(this.recentEmojis))
 
       var value = '';
       if (this.inputTarget.value)
@@ -313,10 +391,19 @@ the category tabs.
     _onSearchInput: function(event) {
       var search = this.$.searchInput.value.toLowerCase();
       if (search.trim() == '' && this.selected == this._searchPageIndex) {
-        this.selected = 0;
+        this.toggleClass('hide',true,this.$.clearSearch)
+        this.selected = this.prevTab;
+        this.searchActive = false;
         return;
       }
-
+      
+      if(!this.searchActive)
+      {
+        this.prevTab = this.selected;
+        this.searchActive = true;
+        this.toggleClass('hide',false,this.$.clearSearch)
+      }
+        
       if (!this.emojis)
         return;
 
@@ -337,8 +424,10 @@ the category tabs.
     },
 
     _onClearSearchInput: function() {
+      this.searchActive = false;
+      this.toggleClass('hide',true,this.$.clearSearch)
       this.$.searchInput.value = '';
-      this.selected = 0;
+      this.selected = this.prevTab;
     },
 
     _closeMenu: function() {
