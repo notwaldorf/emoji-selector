@@ -170,7 +170,7 @@ the category tabs.
           <iron-pages selected="{{selected}}">
             <div class="emoji-section">
               <template is="dom-repeat" id="resultList" items="{{recentlyUsedEmojis}}">
-                <div class="emoji-icon" on-tap="_onEmojiClick">{{item.char}}</div>
+                <div class="emoji-icon" on-tap="_onEmojiClick">{{item}}</div>
               </template>
             </div>
             <template is="dom-repeat" items="[[emojis]]" as="category">
@@ -226,14 +226,6 @@ the category tabs.
       },
 
       /**
-       * A list of all recently used emoji, and the number of times they've been used.
-       */
-      recentEmojisWithCounts: {
-        type: Object,
-        value: {}
-      },
-
-      /**
        * A sorted list of all recently used emoji.
        */
       recentlyUsedEmojis: {
@@ -258,12 +250,12 @@ the category tabs.
     attached: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
       this._selectedTabBeforeSearch = 0;
+      this._localStorageKey = '__emoji-selector-recently-used__';
 
-      this.recentEmojisWithCounts = JSON.parse(localStorage.getItem('recentEmojisWithCounts'));
-      if (this.recentEmojisWithCounts === null) {
-        this.recentEmojisWithCounts = new Object();
-      } else {
-        this._updateRecentEmoji()
+      this.recentlyUsedEmojis = JSON.parse(localStorage.getItem(this._localStorageKey));
+
+      if (this.recentlyUsedEmojis === null) {
+        this.recentlyUsedEmojis = [];
       }
 
       this._loadEmojiLib();
@@ -320,26 +312,7 @@ the category tabs.
         }
       }
 
-      this.selected = Object.keys(this.recentEmojisWithCounts).length == 0 ? 1 : 0;
-      //this.$.tabs.notifyResize();
-    },
-
-    _updateRecentEmoji: function() {
-      this.recentlyUsedEmojis = [];
-
-      var sortable = [];
-      for (var emoji in this.recentEmojisWithCounts)
-        sortable.push([emoji, this.recentEmojisWithCounts[emoji]])
-
-      sortable.sort(function(a,b){
-        return a[1] < b[1];
-      })
-
-      for (var i = 0; i < sortable.length; i++) {
-        this.push('recentlyUsedEmojis', {'char': sortable[i][0]});
-      }
-      //TODO there should be an User option if he wants to open the last tab or the recently used ones
-      //this.selected = 0;
+      this.selected = this.recentlyUsedEmojis.length == 0 ? 1 : 0;
     },
 
     _onEmojiClick: function(event) {
@@ -347,17 +320,14 @@ the category tabs.
         return;
       var emoji = event.target.textContent;
 
-      // If it's been already used, bump its usage count.
-      if(!this.recentEmojisWithCounts[emoji])
-         this.recentEmojisWithCounts[emoji] = 1;
-      else
-        ++this.recentEmojisWithCounts[emoji];
+      // If this emoji already exists, remove it. In all cases, add it to the
+      // front of the queue.
+      var index = this.recentlyUsedEmojis.indexOf(emoji);
+      if (index != -1)
+        this.splice('recentlyUsedEmojis', index, 1);
+      this.unshift('recentlyUsedEmojis', emoji);
 
-      //sort it an put it into recentEmojisWithCounts
-      this._updateRecentEmoji();
-
-      //save it to local Storage
-      localStorage.setItem('recentEmojisWithCounts', JSON.stringify(this.recentEmojisWithCounts))
+      localStorage.setItem(this._localStorageKey, JSON.stringify(this.recentlyUsedEmojis));
 
       var value = '';
       if (this.inputTarget.value)
@@ -415,7 +385,6 @@ the category tabs.
       this.$.clearSearch.hidden = true;
       this.$.searchInput.value = '';
       this.selected = this._selectedTabBeforeSearch;
-      debugger
     },
 
     _closeMenu: function() {
