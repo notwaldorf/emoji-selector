@@ -258,13 +258,15 @@ the category tabs.
       }
     },
 
-    attached: function() {
+    ready: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
 
       // Some constants.
       this._selectedTabBeforeSearch = 1;
       this._hasLocalStorage = this._checkLocalStorage();
+    },
 
+    attached: function() {
       // Restore recently used emoji.
       if (this._hasLocalStorage) {
         this._localStorageKey = '__emoji-selector-recently-used__';
