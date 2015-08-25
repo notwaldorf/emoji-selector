@@ -260,13 +260,11 @@ the category tabs.
 
     ready: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
-
-      // Some constants.
       this._selectedTabBeforeSearch = 1;
-      this._hasLocalStorage = this._checkLocalStorage();
     },
 
     attached: function() {
+      this._hasLocalStorage = this._checkLocalStorage();
       // Restore recently used emoji.
       if (this._hasLocalStorage) {
         this._localStorageKey = '__emoji-selector-recently-used__';
@@ -456,8 +454,9 @@ the category tabs.
     },
 
     _checkLocalStorage: function() {
+      var mod = '__emoji_test_local_storage__';
       try {
-        localStorage.setItem(mod, mod);
+        localStorage.setItem(mod, 'a');
         localStorage.removeItem(mod);
         return true;
       } catch (exception) {
