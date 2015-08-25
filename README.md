@@ -7,16 +7,19 @@ Since you probably don't remember where each emoji is, it ships with a search-fo
 
 Example:
 ```html
-    <paper-input-container>
-      <emoji-selector></emoji-selector>
-      <label>boring input</label>
-      <input is="iron-input">
-    </paper-input-container>
+    <paper-input label="needs moar emoji">
+      <emoji-selector suffix></emoji-selector>
+    </paper-input>
 
     <paper-input-container>
-      <emoji-selector></emoji-selector>
-      <label>autogrow-textarea</label>
-      <iron-autogrow-textarea class="paper-input-input"></iron-autogrow-textarea>
+      <emoji-selector suffix id="s1"></emoji-selector>
+      <label>whoa! textareas!</label>
+      <iron-autogrow-textarea class="paper-input-input" id="a1"></iron-autogrow-textarea>
     </paper-input-container>
+    <script>
+      // Elements that aren't paper-inputs work. but need to be manually wired up.
+      document.getElementById('s1').inputTarget = document.getElementById('a1');
+    </script>
+
 ```
 💖
