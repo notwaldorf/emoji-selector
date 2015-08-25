@@ -164,7 +164,7 @@ the category tabs.
 
           <iron-pages selected="{{selected}}">
             <div class="emoji-section">
-              <template is="dom-repeat" id="resultList" items="{{recentUsed}}">
+              <template is="dom-repeat" id="resultList" items="{{recentlyUsedEmojis}}">
                 <div class="emoji-icon" on-tap="_onEmojiClick">{{item.char}}</div>
               </template>
             </div>
@@ -221,18 +221,24 @@ the category tabs.
       },
 
       /**
-       * A list of all recently used emoji.
+       * A list of all recently used emoji, and the number of times they've been used.
        */
-      recentEmojis: {
+      recentEmojisWithCounts: {
         type: Object,
         value: {}
       },
 
-      recentUsed: {
+      /**
+       * A sorted list of all recently used emoji.
+       */
+      recentlyUsedEmojis: {
         type: Array,
         value: []
       },
 
+      /**
+       * A list of the emojis matching the search.
+       */
       searchResults: {
         type: Array,
         value: []
@@ -244,15 +250,15 @@ the category tabs.
       }
     },
 
-    ready: function() {
+    attached: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
       this._selectedTabBeforeSearch = 0;
 
-      this.recentEmojis = JSON.parse(localStorage.getItem('recentEmojis'));
-      if (this.recentEmojis === null) {
-        this.recentEmojis = new Object();
+      this.recentEmojisWithCounts = JSON.parse(localStorage.getItem('recentEmojisWithCounts'));
+      if (this.recentEmojisWithCounts === null) {
+        this.recentEmojisWithCounts = new Object();
       } else {
-        this._updateRecentEmoji(this.recentEmojis)
+        this._updateRecentEmoji()
       }
 
       this._loadEmojiLib();
@@ -309,23 +315,24 @@ the category tabs.
         }
       }
 
-      // set selected using rcent emojis here
+      debugger
+      this.selected = Object.keys(this.recentEmojisWithCounts).length == 0 ? 1 : 0;
+      //this.$.tabs.notifyResize();
     },
 
-    _updateRecentEmoji: function(obj) {
-      this.recentUsed = [];
-      //for sorting we will need an array
+    _updateRecentEmoji: function() {
+      this.recentlyUsedEmojis = [];
+
       var sortable = [];
-      for (var key in obj)
-        sortable.push([key, obj[key]])
+      for (var emoji in this.recentEmojisWithCounts)
+        sortable.push([emoji, this.recentEmojisWithCounts[emoji]])
 
       sortable.sort(function(a,b){
         return a[1] < b[1];
       })
 
       for (var i = 0; i < sortable.length; i++) {
-        this.push('recentUsed',
-            {'char': sortable[i][0]});
+        this.push('recentlyUsedEmojis', {'char': sortable[i][0]});
       }
       //TODO there should be an User option if he wants to open the last tab or the recently used ones
       //this.selected = 0;
@@ -336,17 +343,17 @@ the category tabs.
         return;
       var emoji = event.target.textContent;
 
-      //is it allready in the recent tab? then count it up
-      if(typeof this.recentEmojis[emoji] == 'undefined')
-         this.recentEmojis[emoji] = 1
+      // If it's been already used, bump its usage count.
+      if(!this.recentEmojisWithCounts[emoji])
+         this.recentEmojisWithCounts[emoji] = 1;
       else
-        ++this.recentEmojis[emoji];
+        ++this.recentEmojisWithCounts[emoji];
 
-      //sort it an put it into recentEmojis
-      this._updateRecentEmoji(this.recentEmojis);
+      //sort it an put it into recentEmojisWithCounts
+      this._updateRecentEmoji();
 
       //save it to local Storage
-      localStorage.setItem('recentEmojis', JSON.stringify(this.recentEmojis))
+      localStorage.setItem('recentEmojisWithCounts', JSON.stringify(this.recentEmojisWithCounts))
 
       var value = '';
       if (this.inputTarget.value)
