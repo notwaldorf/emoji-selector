@@ -71,10 +71,6 @@ the category tabs.
       };
     };
 
-    .hide {
-      display: none;
-    }
-
     iron-pages {
       height: 155px;
     }
@@ -144,14 +140,14 @@ the category tabs.
     <paper-menu-button id="menu"
         vertical-align="top" vertical-offset="40"
         horizontal-align="[[_computeHorizontalAlign(smallScreen)]]"
-        ignore-activate>
+        ignore-select>
       <paper-icon-button icon="face" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         <div class="box">
           <paper-input autofocus no-label-float id="searchInput" placeholder="find an emoji!"
             on-input="_onSearchInput">
             <paper-icon-button suffix on-tap="_onClearSearchInput" id="clearSearch" class="clear-button hide"
-                icon="clear" alt="clear" title="clear" tabindex="0">
+                icon="clear" alt="clear" title="clear" tabindex="0" hidden>
             </paper-icon-button>
           </paper-input>
 
@@ -225,35 +221,21 @@ the category tabs.
       },
 
       /**
-       * A list of all emojis, used recently.
+       * A list of all recently used emoji.
        */
-       
       recentEmojis: {
         type: Object,
         value: {}
       },
-      
+
       recentUsed: {
         type: Array,
         value: []
       },
 
-      /**
-       * simple helper vars
-       */
-      prevTab: {
-        type: Number,
-        value: 0
-      },
-      
       searchResults: {
         type: Array,
         value: []
-      },
-      
-      searchActive: {
-        type: Boolean,
-        value: false
       },
 
       smallScreen: {
@@ -264,19 +246,16 @@ the category tabs.
 
     ready: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
-      this._loadEmojiLib();
-      
+      this._selectedTabBeforeSearch = 0;
+
       this.recentEmojis = JSON.parse(localStorage.getItem('recentEmojis'));
-      if (this.recentEmojis === null)
-      {
-        this.selected = 1;
+      if (this.recentEmojis === null) {
         this.recentEmojis = new Object();
-      }
-      else
-      {
-        this.selected = 0;
+      } else {
         this._updateRecentEmoji(this.recentEmojis)
       }
+
+      this._loadEmojiLib();
     },
 
     /**
@@ -329,10 +308,11 @@ the category tabs.
                'keywords': keywords.join(' ').toLowerCase()});
         }
       }
+
+      // set selected using rcent emojis here
     },
-    
-    _updateRecentEmoji: function(obj)
-    {
+
+    _updateRecentEmoji: function(obj) {
       this.recentUsed = [];
       //for sorting we will need an array
       var sortable = [];
@@ -342,7 +322,7 @@ the category tabs.
       sortable.sort(function(a,b){
         return a[1] < b[1];
       })
-      
+
       for (var i = 0; i < sortable.length; i++) {
         this.push('recentUsed',
             {'char': sortable[i][0]});
@@ -360,7 +340,7 @@ the category tabs.
       if(typeof this.recentEmojis[emoji] == 'undefined')
          this.recentEmojis[emoji] = 1
       else
-        ++this.recentEmojis[emoji];       
+        ++this.recentEmojis[emoji];
 
       //sort it an put it into recentEmojis
       this._updateRecentEmoji(this.recentEmojis);
@@ -391,19 +371,16 @@ the category tabs.
     _onSearchInput: function(event) {
       var search = this.$.searchInput.value.toLowerCase();
       if (search.trim() == '' && this.selected == this._searchPageIndex) {
-        this.toggleClass('hide',true,this.$.clearSearch)
-        this.selected = this.prevTab;
-        this.searchActive = false;
+        this.clearSearch.hidden = true;
+        this.selected = this._selectedTabBeforeSearch;
         return;
       }
-      
-      if(!this.searchActive)
-      {
-        this.prevTab = this.selected;
-        this.searchActive = true;
-        this.toggleClass('hide',false,this.$.clearSearch)
-      }
-        
+
+      // Remember what we were looking at before the search started
+      if (this.selected != this._searchPageIndex)
+        this._selectedTabBeforeSearch = this.selected;
+      this.$.clearSearch.hidden = false;
+
       if (!this.emojis)
         return;
 
@@ -424,10 +401,10 @@ the category tabs.
     },
 
     _onClearSearchInput: function() {
-      this.searchActive = false;
-      this.toggleClass('hide',true,this.$.clearSearch)
+      this.$.clearSearch.hidden = true;
       this.$.searchInput.value = '';
-      this.selected = this.prevTab;
+      this.selected = this._selectedTabBeforeSearch;
+      debugger
     },
 
     _closeMenu: function() {
