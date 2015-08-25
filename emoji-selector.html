@@ -249,11 +249,13 @@ the category tabs.
 
     attached: function() {
       this.inputTarget = Polymer.dom(this).parentNode;
-      this._selectedTabBeforeSearch = 0;
+
+      // Some constants.
+      this._selectedTabBeforeSearch = 1;
       this._localStorageKey = '__emoji-selector-recently-used__';
 
+      // Restore recently used emoji.
       this.recentlyUsedEmojis = JSON.parse(localStorage.getItem(this._localStorageKey));
-
       if (this.recentlyUsedEmojis === null) {
         this.recentlyUsedEmojis = [];
       }
@@ -321,7 +323,7 @@ the category tabs.
       var emoji = event.target.textContent;
 
       // If this emoji already exists, remove it. In all cases, add it to the
-      // front of the queue.
+      // front of the queue since it's the newest one.
       var index = this.recentlyUsedEmojis.indexOf(emoji);
       if (index != -1)
         this.splice('recentlyUsedEmojis', index, 1);
@@ -357,7 +359,7 @@ the category tabs.
         return;
       }
 
-      // Remember what we were looking at before the search started
+      // Remember what we were looking at before the search started.
       if (this.selected != this._searchPageIndex)
         this._selectedTabBeforeSearch = this.selected;
       this.$.clearSearch.hidden = false;
