@@ -10,14 +10,17 @@ Example:
     <paper-input label="needs moar emoji">
       <emoji-selector suffix></emoji-selector>
     </paper-input>
+```
 
+Also works with non `<paper-input>`s, provided you manually wire up the input:
+```html
     <paper-input-container>
       <emoji-selector suffix id="s1"></emoji-selector>
       <label>whoa! textareas!</label>
       <iron-autogrow-textarea class="paper-input-input" id="a1"></iron-autogrow-textarea>
     </paper-input-container>
+    
     <script>
-      // Elements that aren't paper-inputs work. but need to be manually wired up.
       document.getElementById('s1').inputTarget = document.getElementById('a1');
     </script>
 
