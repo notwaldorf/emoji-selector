@@ -263,10 +263,14 @@ the category tabs.
 
       // Some constants.
       this._selectedTabBeforeSearch = 1;
-      this._localStorageKey = '__emoji-selector-recently-used__';
+      this._hasLocalStorage = this._checkLocalStorage();
 
       // Restore recently used emoji.
-      this.recentlyUsedEmojis = JSON.parse(localStorage.getItem(this._localStorageKey));
+      if (this._hasLocalStorage) {
+        this._localStorageKey = '__emoji-selector-recently-used__';
+        this.recentlyUsedEmojis = JSON.parse(localStorage.getItem(this._localStorageKey));
+      }
+
       if (this.recentlyUsedEmojis === null) {
         this.recentlyUsedEmojis = [];
       }
@@ -340,7 +344,8 @@ the category tabs.
         this.splice('recentlyUsedEmojis', index, 1);
       this.unshift('recentlyUsedEmojis', emoji);
 
-      localStorage.setItem(this._localStorageKey, JSON.stringify(this.recentlyUsedEmojis));
+      if (this._hasLocalStorage)
+        localStorage.setItem(this._localStorageKey, JSON.stringify(this.recentlyUsedEmojis));
 
       var value = '';
       if (this.inputTarget.value)
@@ -446,6 +451,16 @@ the category tabs.
 
     _computeHorizontalAlign: function(smallScreen) {
       return smallScreen ? 'right': 'left';
+    },
+
+    _checkLocalStorage: function() {
+      try {
+        localStorage.setItem(mod, mod);
+        localStorage.removeItem(mod);
+        return true;
+      } catch (exception) {
+        return false;
+      };
     }
   });
 
