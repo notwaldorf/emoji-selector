@@ -7,6 +7,9 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/notwaldorf/emoji-selector",
+  "ignore": [
+    "bower_components"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
     "paper-styles": "PolymerElements/paper-styles#^1.0.0",
