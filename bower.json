@@ -1,6 +1,17 @@
 {
   "name": "emoji-selector",
   "version": "1.1.0",
+  "description": "A polymer element that adds an emoji selector button to a paper-input",
+  "main": "emoji-selector.html",
+  "author": [
+    "Monica Dinculescu <noms@google.com>"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "emoji",
+    "input"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/notwaldorf/emoji-selector"
