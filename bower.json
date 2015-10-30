@@ -1,6 +1,6 @@
 {
   "name": "emoji-selector",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A polymer element that adds an emoji selector button to a paper-input",
   "main": "emoji-selector.html",
   "author": [
