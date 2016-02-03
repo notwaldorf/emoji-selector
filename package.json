@@ -1,0 +1,42 @@
+{
+  "name": "emoji-selector",
+  "version": "1.1.1",
+  "description": "A polymer element that adds an emoji selector button to a paper-input",
+  "main": "emoji-selector.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notwaldorf/emoji-selector.git"
+  },
+  "keywords": [
+    "web-components",
+    "polymer",
+    "emoji",
+    "input"
+  ],
+  "author": "Monica Dinculescu <noms@google.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/notwaldorf/emoji-selector/issues"
+  },
+  "homepage": "https://github.com/notwaldorf/emoji-selector#readme",
+  "dependencies": {
+    "@polymer/iron-icon": "^0.0.3",
+    "@polymer/iron-media-query": "^0.0.3",
+    "@polymer/iron-pages": "^0.0.3",
+    "@polymer/paper-input": "^0.0.3",
+    "@polymer/paper-menu-button": "^0.0.3",
+    "@polymer/paper-styles": "^0.0.3",
+    "@polymer/paper-tabs": "^0.0.3",
+    "@polymer/polymer": "^1.2.5-npm-test.2",
+    "emojilib": "^2.0.2"
+  },
+  "devDependencies": {
+    "@polymer/iron-component-page": "^0.0.3",
+    "event-stream": "^3.3.2",
+    "gulp": "^3.9.0",
+    "webcomponents.js": "^0.7.20"
+  }
+}
