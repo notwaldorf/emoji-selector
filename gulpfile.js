@@ -3,7 +3,7 @@
 let gulp = require('gulp');
 let es = require('event-stream');
 
-gulp.task('browser_modules', ['prism', 'hydrolysis'], () =>
+gulp.task('browser_modules', ['prism', 'webcomponents.js', 'hydrolysis'], () =>
   es.merge(
     gulp.src('node_modules/@polymer/**'),
     gulp.src([
@@ -25,6 +25,10 @@ gulp.task('prism', [`prism-copy`], () =>
 gulp.task('prism-copy', () =>
   gulp.src('node_modules/prismjs-package/**/*')
     .pipe(gulp.dest('browser_modules/prism')));
+
+gulp.task('webcomponents.js', () =>
+  gulp.src('node_modules/webcomponents.js/**/*')
+    .pipe(gulp.dest('browser_modules/webcomponentsjs')));
 
 gulp.task('hydrolysis', () =>
   gulp.src('bower_components/hydrolysis/**/*')
