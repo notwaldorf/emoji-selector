@@ -1,5 +1,8 @@
 # emoji-selector
 
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/notwaldorfemoji-selector)
+[![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/notwaldorfemoji-selector.svg)](https://vaadin.com/directory/component/notwaldorfemoji-selector)
+
 👋`emoji-selector` is a Polymer custom element that acts as a `paper-input` suffix (see [Polymer.PaperInput](https://github.com/polymerelements/paper-input)) to help you with your emoji shenanigans.
 
 Since you probably don't remember where each emoji is, it ships with a search-for-emoji-keywords feature! 🚀🎉
